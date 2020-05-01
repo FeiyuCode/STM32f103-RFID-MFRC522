@@ -6,10 +6,10 @@
 #include "led.h"
 #include "beep.h"
 
-/*È«¾Ö±äÁ¿*/
-unsigned char CT[2];//¿¨ÀàĞÍ
-unsigned char SN[4]; //¿¨ºÅ
-unsigned char RFID[16];//´æ·ÅRFID
+/*å…¨å±€å˜é‡*/
+unsigned char CT[2];//å¡ç±»å‹
+unsigned char SN[4]; //å¡å·
+unsigned char RFID[16];//å­˜æ”¾RFID
 unsigned char card1_bit=0;
 unsigned char card2_bit=0;
 unsigned char card3_bit=0;
@@ -21,7 +21,6 @@ unsigned char card_4[4]= {166,67,153,172};
 u8 KEY[6]= {0xff,0xff,0xff,0xff,0xff,0xff};
 u8 AUDIO_OPEN[6] = {0xAA, 0x07, 0x02, 0x00, 0x09, 0xBC};
 unsigned char RFID1[16]= {0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x07,0x80,0x29,0xff,0xff,0xff,0xff,0xff,0xff};
-/*º¯ÊıÉùÃ÷*/
 unsigned char status;
 unsigned char s=0x08;
 int blance;
@@ -31,19 +30,19 @@ int blance;
 void RC522_Handel(void)
 {
 
-    status = PcdRequest(PICC_REQALL,CT);//Ñ°¿¨
+    status = PcdRequest(PICC_REQALL,CT);//å¯»å¡
 
     //printf("\r\nstatus>>>>>>%d\r\n", status);
 
-    if(status==MI_OK)// Ñ°¿¨³É¹¦
+    if(status==MI_OK)// å¯»å¡æˆåŠŸ
     {
         status=MI_ERR;
-        status = PcdAnticoll(SN);// ·À³å×²
-				if (status==MI_OK)// ·À³å×²³É¹¦
+        status = PcdAnticoll(SN);// é˜²å†²æ’
+				if (status==MI_OK)// é˜²å†²æ’æˆåŠŸ
 				{
 						status=MI_ERR;
 						printf("******************************************\r\n");
-						ShowID(SN); // ´®¿Ú´òÓ¡¿¨µÄIDºÅ
+						ShowID(SN); // ä¸²å£æ‰“å°å¡çš„IDå·
 					
 						if((SN[0]==card_1[0])&&(SN[1]==card_1[1])&&(SN[2]==card_1[2])&&(SN[3]==card_1[3]))
 						{
@@ -67,15 +66,15 @@ void RC522_Handel(void)
 						}
 						//total=card1_bit+card2_bit+card3_bit+card4_bit+lxl_bit;
 						status =PcdSelect(SN);
-						if(status==MI_OK)//Ñ¡¿¨³É¹¦
+						if(status==MI_OK)//é€‰å¡æˆåŠŸ
 						{
 								status=MI_ERR;
 								status =PcdAuthState(0x60,0x07,KEY,SN);
-								if(status==MI_OK)//keyAÑéÖ¤³É¹¦
+								if(status==MI_OK)//keyAéªŒè¯æˆåŠŸ
 								{		
 										status=MI_ERR;
 										status=PcdRead(4,RFID);
-										if(status==MI_OK)//¶Á¿¨³É¹¦
+										if(status==MI_OK)//è¯»å¡æˆåŠŸ
 										{
 												blance = RFID[0]*16+RFID[1];
 												if(blance==0)
@@ -84,7 +83,7 @@ void RC522_Handel(void)
 														RFID[1]=Recharge%16;
 														status=MI_ERR;
 														status=PcdWrite(4,RFID);
-														if(status==MI_OK) printf(">>>³É¹¦³äÖµ%dÔª£¡\r\n",Recharge);
+														if(status==MI_OK) printf(">>>æˆåŠŸå……å€¼%då…ƒï¼\r\n",Recharge);
 														for(char i=0; i<2; i++)
 														{
 																LED0=1;
@@ -104,14 +103,14 @@ void RC522_Handel(void)
 														RFID[0]=(blance-1)/16;
 														RFID[1]=(blance-1)%16;													
 														status=PcdWrite(4,RFID);
-														if(status==MI_OK)//Ğ´¿¨³É¹¦
+														if(status==MI_OK)//å†™å¡æˆåŠŸ
 														{
 																status=PcdRead(4,RFID);
 																if(status==MI_OK)
 																{
-																		printf(">>>>>>Ë¢¿¨³É¹¦£¡\r\n");
+																		printf(">>>>>>åˆ·å¡æˆåŠŸï¼\r\n");
 																		blance = RFID[0]*16+RFID[1];
-																		printf(">>>>>>Óà¶î£º%d\r\n",blance);
+																		printf(">>>>>>ä½™é¢ï¼š%d\r\n",blance);
 																		LED1=1;
 																		BEEP=0;
 																		delay_ms(300);
@@ -150,53 +149,53 @@ void RC522_Init ( void )
 
     PcdReset ();
 
-    M500PcdConfigISOType ( 'A' );//ÉèÖÃ¹¤×÷·½Ê½
+    M500PcdConfigISOType ( 'A' );//è®¾ç½®å·¥ä½œæ–¹å¼
 }
 
 void SPI1_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
-    RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE );//PORTA¡¢BÊ±ÖÓÊ¹ÄÜ
+    RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE );//PORTAã€Bæ—¶é’Ÿä½¿èƒ½
 
     // CS
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO¿ÚËÙ¶ÈÎª50MHz
-    GPIO_Init(GPIOA, &GPIO_InitStructure);					 //¸ù¾İÉè¶¨²ÎÊı³õÊ¼»¯PF0¡¢PF1
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IOå£é€Ÿåº¦ä¸º50MHz
+    GPIO_Init(GPIOA, &GPIO_InitStructure);					 //æ ¹æ®è®¾å®šå‚æ•°åˆå§‹åŒ–PF0ã€PF1
 
     // SCK
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO¿ÚËÙ¶ÈÎª50MHz
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IOå£é€Ÿåº¦ä¸º50MHz
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     // MISO
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; 		 //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO¿ÚËÙ¶ÈÎª50MHz
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; 		 //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IOå£é€Ÿåº¦ä¸º50MHz
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     // MOSI
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO¿ÚËÙ¶ÈÎª50MHz
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IOå£é€Ÿåº¦ä¸º50MHz
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     // RST
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO¿ÚËÙ¶ÈÎª50MHz
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IOå£é€Ÿåº¦ä¸º50MHz
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 }
 
 
 /*
- * º¯ÊıÃû£ºSPI_RC522_SendByte
- * ÃèÊö  £ºÏòRC522·¢ËÍ1 Byte Êı¾İ
- * ÊäÈë  £ºbyte£¬Òª·¢ËÍµÄÊı¾İ
- * ·µ»Ø  : RC522·µ»ØµÄÊı¾İ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šSPI_RC522_SendByte
+ * æè¿°  ï¼šå‘RC522å‘é€1 Byte æ•°æ®
+ * è¾“å…¥  ï¼šbyteï¼Œè¦å‘é€çš„æ•°æ®
+ * è¿”å›  : RC522è¿”å›çš„æ•°æ®
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void SPI_RC522_SendByte ( u8 byte )
 {
@@ -227,11 +226,11 @@ void SPI_RC522_SendByte ( u8 byte )
 
 
 /*
- * º¯ÊıÃû£ºSPI_RC522_ReadByte
- * ÃèÊö  £º´ÓRC522·¢ËÍ1 Byte Êı¾İ
- * ÊäÈë  £ºÎŞ
- * ·µ»Ø  : RC522·µ»ØµÄÊı¾İ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šSPI_RC522_ReadByte
+ * æè¿°  ï¼šä»RC522å‘é€1 Byte æ•°æ®
+ * è¾“å…¥  ï¼šæ— 
+ * è¿”å›  : RC522è¿”å›çš„æ•°æ®
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 u8 SPI_RC522_ReadByte ( void )
 {
@@ -265,11 +264,11 @@ u8 SPI_RC522_ReadByte ( void )
 
 
 /*
- * º¯ÊıÃû£ºReadRawRC
- * ÃèÊö  £º¶ÁRC522¼Ä´æÆ÷
- * ÊäÈë  £ºucAddress£¬¼Ä´æÆ÷µØÖ·
- * ·µ»Ø  : ¼Ä´æÆ÷µÄµ±Ç°Öµ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šReadRawRC
+ * æè¿°  ï¼šè¯»RC522å¯„å­˜å™¨
+ * è¾“å…¥  ï¼šucAddressï¼Œå¯„å­˜å™¨åœ°å€
+ * è¿”å›  : å¯„å­˜å™¨çš„å½“å‰å€¼
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 u8 ReadRawRC ( u8 ucAddress )
 {
@@ -291,12 +290,12 @@ u8 ReadRawRC ( u8 ucAddress )
 
 
 /*
- * º¯ÊıÃû£ºWriteRawRC
- * ÃèÊö  £ºĞ´RC522¼Ä´æÆ÷
- * ÊäÈë  £ºucAddress£¬¼Ä´æÆ÷µØÖ·
- *         ucValue£¬Ğ´Èë¼Ä´æÆ÷µÄÖµ
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šWriteRawRC
+ * æè¿°  ï¼šå†™RC522å¯„å­˜å™¨
+ * è¾“å…¥  ï¼šucAddressï¼Œå¯„å­˜å™¨åœ°å€
+ *         ucValueï¼Œå†™å…¥å¯„å­˜å™¨çš„å€¼
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void WriteRawRC ( u8 ucAddress, u8 ucValue )
 {
@@ -315,12 +314,12 @@ void WriteRawRC ( u8 ucAddress, u8 ucValue )
 
 
 /*
- * º¯ÊıÃû£ºSetBitMask
- * ÃèÊö  £º¶ÔRC522¼Ä´æÆ÷ÖÃÎ»
- * ÊäÈë  £ºucReg£¬¼Ä´æÆ÷µØÖ·
- *         ucMask£¬ÖÃÎ»Öµ
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šSetBitMask
+ * æè¿°  ï¼šå¯¹RC522å¯„å­˜å™¨ç½®ä½
+ * è¾“å…¥  ï¼šucRegï¼Œå¯„å­˜å™¨åœ°å€
+ *         ucMaskï¼Œç½®ä½å€¼
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void SetBitMask ( u8 ucReg, u8 ucMask )
 {
@@ -334,12 +333,12 @@ void SetBitMask ( u8 ucReg, u8 ucMask )
 
 
 /*
- * º¯ÊıÃû£ºClearBitMask
- * ÃèÊö  £º¶ÔRC522¼Ä´æÆ÷ÇåÎ»
- * ÊäÈë  £ºucReg£¬¼Ä´æÆ÷µØÖ·
- *         ucMask£¬ÇåÎ»Öµ
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šClearBitMask
+ * æè¿°  ï¼šå¯¹RC522å¯„å­˜å™¨æ¸…ä½
+ * è¾“å…¥  ï¼šucRegï¼Œå¯„å­˜å™¨åœ°å€
+ *         ucMaskï¼Œæ¸…ä½å€¼
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void ClearBitMask ( u8 ucReg, u8 ucMask )
 {
@@ -352,13 +351,13 @@ void ClearBitMask ( u8 ucReg, u8 ucMask )
 }
 
 
-//µÈ´ı¿¨Àë¿ª
+//ç­‰å¾…å¡ç¦»å¼€
 void WaitCardOff(void)
 {
 		char cstatus;
 		while(1)
 		{
-				cstatus = PcdRequest(PICC_REQALL,CT);//Ñ°¿¨
+				cstatus = PcdRequest(PICC_REQALL,CT);//å¯»å¡
 				if(cstatus)
 				{
 						cstatus = PcdRequest(PICC_REQALL,CT);
@@ -376,11 +375,11 @@ void WaitCardOff(void)
 		}
 }
 /*
- * º¯ÊıÃû£ºPcdAntennaOn
- * ÃèÊö  £º¿ªÆôÌìÏß
- * ÊäÈë  £ºÎŞ
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdAntennaOn
+ * æè¿°  ï¼šå¼€å¯å¤©çº¿
+ * è¾“å…¥  ï¼šæ— 
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void PcdAntennaOn ( void )
 {
@@ -395,11 +394,11 @@ void PcdAntennaOn ( void )
 
 
 /*
- * º¯ÊıÃû£ºPcdAntennaOff
- * ÃèÊö  £º¹Ø±ÕÌìÏß
- * ÊäÈë  £ºÎŞ
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdAntennaOff
+ * æè¿°  ï¼šå…³é—­å¤©çº¿
+ * è¾“å…¥  ï¼šæ— 
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void PcdAntennaOff ( void )
 {
@@ -410,11 +409,11 @@ void PcdAntennaOff ( void )
 
 
 /*
- * º¯ÊıÃû£ºPcdRese
- * ÃèÊö  £º¸´Î»RC522
- * ÊäÈë  £ºÎŞ
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdRese
+ * æè¿°  ï¼šå¤ä½RC522
+ * è¾“å…¥  ï¼šæ— 
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 void PcdReset ( void )
 {
@@ -436,27 +435,27 @@ void PcdReset ( void )
 
     delay_us ( 1 );
 
-    WriteRawRC ( ModeReg, 0x3D );            //¶¨Òå·¢ËÍºÍ½ÓÊÕ³£ÓÃÄ£Ê½ ºÍMifare¿¨Í¨Ñ¶£¬CRC³õÊ¼Öµ0x6363
+    WriteRawRC ( ModeReg, 0x3D );            //å®šä¹‰å‘é€å’Œæ¥æ”¶å¸¸ç”¨æ¨¡å¼ å’ŒMifareå¡é€šè®¯ï¼ŒCRCåˆå§‹å€¼0x6363
 
-    WriteRawRC ( TReloadRegL, 30 );          //16Î»¶¨Ê±Æ÷µÍÎ»
-    WriteRawRC ( TReloadRegH, 0 );			 //16Î»¶¨Ê±Æ÷¸ßÎ»
+    WriteRawRC ( TReloadRegL, 30 );          //16ä½å®šæ—¶å™¨ä½ä½
+    WriteRawRC ( TReloadRegH, 0 );			 //16ä½å®šæ—¶å™¨é«˜ä½
 
-    WriteRawRC ( TModeReg, 0x8D );		      //¶¨ÒåÄÚ²¿¶¨Ê±Æ÷µÄÉèÖÃ
+    WriteRawRC ( TModeReg, 0x8D );		      //å®šä¹‰å†…éƒ¨å®šæ—¶å™¨çš„è®¾ç½®
 
-    WriteRawRC ( TPrescalerReg, 0x3E );			 //ÉèÖÃ¶¨Ê±Æ÷·ÖÆµÏµÊı
+    WriteRawRC ( TPrescalerReg, 0x3E );			 //è®¾ç½®å®šæ—¶å™¨åˆ†é¢‘ç³»æ•°
 
-    WriteRawRC ( TxAutoReg, 0x40 );				   //µ÷ÖÆ·¢ËÍĞÅºÅÎª100%ASK
+    WriteRawRC ( TxAutoReg, 0x40 );				   //è°ƒåˆ¶å‘é€ä¿¡å·ä¸º100%ASK
 
 
 }
 
 
 /*
- * º¯ÊıÃû£ºM500PcdConfigISOType
- * ÃèÊö  £ºÉèÖÃRC522µÄ¹¤×÷·½Ê½
- * ÊäÈë  £ºucType£¬¹¤×÷·½Ê½
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šM500PcdConfigISOType
+ * æè¿°  ï¼šè®¾ç½®RC522çš„å·¥ä½œæ–¹å¼
+ * è¾“å…¥  ï¼šucTypeï¼Œå·¥ä½œæ–¹å¼
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 void M500PcdConfigISOType ( u8 ucType )
 {
@@ -480,7 +479,7 @@ void M500PcdConfigISOType ( u8 ucType )
 
         delay_us ( 2 );
 
-        PcdAntennaOn ();//¿ªÌìÏß
+        PcdAntennaOn ();//å¼€å¤©çº¿
 
     }
 
@@ -488,16 +487,16 @@ void M500PcdConfigISOType ( u8 ucType )
 
 
 /*
- * º¯ÊıÃû£ºPcdComMF522
- * ÃèÊö  £ºÍ¨¹ıRC522ºÍISO14443¿¨Í¨Ñ¶
- * ÊäÈë  £ºucCommand£¬RC522ÃüÁî×Ö
- *         pInData£¬Í¨¹ıRC522·¢ËÍµ½¿¨Æ¬µÄÊı¾İ
- *         ucInLenByte£¬·¢ËÍÊı¾İµÄ×Ö½Ú³¤¶È
- *         pOutData£¬½ÓÊÕµ½µÄ¿¨Æ¬·µ»ØÊı¾İ
- *         pOutLenBit£¬·µ»ØÊı¾İµÄÎ»³¤¶È
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdComMF522
+ * æè¿°  ï¼šé€šè¿‡RC522å’ŒISO14443å¡é€šè®¯
+ * è¾“å…¥  ï¼šucCommandï¼ŒRC522å‘½ä»¤å­—
+ *         pInDataï¼Œé€šè¿‡RC522å‘é€åˆ°å¡ç‰‡çš„æ•°æ®
+ *         ucInLenByteï¼Œå‘é€æ•°æ®çš„å­—èŠ‚é•¿åº¦
+ *         pOutDataï¼Œæ¥æ”¶åˆ°çš„å¡ç‰‡è¿”å›æ•°æ®
+ *         pOutLenBitï¼Œè¿”å›æ•°æ®çš„ä½é•¿åº¦
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 char PcdComMF522 ( u8 ucCommand, u8 * pInData, u8 ucInLenByte, u8 * pOutData, u32 * pOutLenBit )
 {
@@ -510,14 +509,14 @@ char PcdComMF522 ( u8 ucCommand, u8 * pInData, u8 ucInLenByte, u8 * pOutData, u3
 
     switch ( ucCommand )
     {
-    case PCD_AUTHENT:		//MifareÈÏÖ¤
-        ucIrqEn   = 0x12;		//ÔÊĞí´íÎóÖĞ¶ÏÇëÇóErrIEn  ÔÊĞí¿ÕÏĞÖĞ¶ÏIdleIEn
-        ucWaitFor = 0x10;		//ÈÏÖ¤Ñ°¿¨µÈ´ıÊ±ºò ²éÑ¯¿ÕÏĞÖĞ¶Ï±êÖ¾Î»
+    case PCD_AUTHENT:		//Mifareè®¤è¯
+        ucIrqEn   = 0x12;		//å…è®¸é”™è¯¯ä¸­æ–­è¯·æ±‚ErrIEn  å…è®¸ç©ºé—²ä¸­æ–­IdleIEn
+        ucWaitFor = 0x10;		//è®¤è¯å¯»å¡ç­‰å¾…æ—¶å€™ æŸ¥è¯¢ç©ºé—²ä¸­æ–­æ ‡å¿—ä½
         break;
 
-    case PCD_TRANSCEIVE:		//½ÓÊÕ·¢ËÍ ·¢ËÍ½ÓÊÕ
-        ucIrqEn   = 0x77;		//ÔÊĞíTxIEn RxIEn IdleIEn LoAlertIEn ErrIEn TimerIEn
-        ucWaitFor = 0x30;		//Ñ°¿¨µÈ´ıÊ±ºò ²éÑ¯½ÓÊÕÖĞ¶Ï±êÖ¾Î»Óë ¿ÕÏĞÖĞ¶Ï±êÖ¾Î»
+    case PCD_TRANSCEIVE:		//æ¥æ”¶å‘é€ å‘é€æ¥æ”¶
+        ucIrqEn   = 0x77;		//å…è®¸TxIEn RxIEn IdleIEn LoAlertIEn ErrIEn TimerIEn
+        ucWaitFor = 0x30;		//å¯»å¡ç­‰å¾…æ—¶å€™ æŸ¥è¯¢æ¥æ”¶ä¸­æ–­æ ‡å¿—ä½ä¸ ç©ºé—²ä¸­æ–­æ ‡å¿—ä½
         break;
 
     default:
@@ -525,49 +524,49 @@ char PcdComMF522 ( u8 ucCommand, u8 * pInData, u8 ucInLenByte, u8 * pOutData, u3
 
     }
 
-    WriteRawRC ( ComIEnReg, ucIrqEn | 0x80 );		//IRqInvÖÃÎ»¹Ü½ÅIRQÓëStatus1RegµÄIRqÎ»µÄÖµÏà·´
-    ClearBitMask ( ComIrqReg, 0x80 );			//Set1¸ÃÎ»ÇåÁãÊ±£¬CommIRqRegµÄÆÁ±ÎÎ»ÇåÁã
-    WriteRawRC ( CommandReg, PCD_IDLE );		//Ğ´¿ÕÏĞÃüÁî
-    SetBitMask ( FIFOLevelReg, 0x80 );			//ÖÃÎ»FlushBufferÇå³ıÄÚ²¿FIFOµÄ¶ÁºÍĞ´Ö¸ÕëÒÔ¼°ErrRegµÄBufferOvfl±êÖ¾Î»±»Çå³ı
+    WriteRawRC ( ComIEnReg, ucIrqEn | 0x80 );		//IRqInvç½®ä½ç®¡è„šIRQä¸Status1Regçš„IRqä½çš„å€¼ç›¸å
+    ClearBitMask ( ComIrqReg, 0x80 );			//Set1è¯¥ä½æ¸…é›¶æ—¶ï¼ŒCommIRqRegçš„å±è”½ä½æ¸…é›¶
+    WriteRawRC ( CommandReg, PCD_IDLE );		//å†™ç©ºé—²å‘½ä»¤
+    SetBitMask ( FIFOLevelReg, 0x80 );			//ç½®ä½FlushBufferæ¸…é™¤å†…éƒ¨FIFOçš„è¯»å’Œå†™æŒ‡é’ˆä»¥åŠErrRegçš„BufferOvflæ ‡å¿—ä½è¢«æ¸…é™¤
 
     for ( ul = 0; ul < ucInLenByte; ul ++ )
-        WriteRawRC ( FIFODataReg, pInData [ ul ] );    		//Ğ´Êı¾İ½øFIFOdata
+        WriteRawRC ( FIFODataReg, pInData [ ul ] );    		//å†™æ•°æ®è¿›FIFOdata
 
-    WriteRawRC ( CommandReg, ucCommand );					//Ğ´ÃüÁî
+    WriteRawRC ( CommandReg, ucCommand );					//å†™å‘½ä»¤
 
 
     if ( ucCommand == PCD_TRANSCEIVE )
-        SetBitMask(BitFramingReg,0x80);  				//StartSendÖÃÎ»Æô¶¯Êı¾İ·¢ËÍ ¸ÃÎ»ÓëÊÕ·¢ÃüÁîÊ¹ÓÃÊ±²ÅÓĞĞ§
+        SetBitMask(BitFramingReg,0x80);  				//StartSendç½®ä½å¯åŠ¨æ•°æ®å‘é€ è¯¥ä½ä¸æ”¶å‘å‘½ä»¤ä½¿ç”¨æ—¶æ‰æœ‰æ•ˆ
 
-    ul = 1000;//¸ù¾İÊ±ÖÓÆµÂÊµ÷Õû£¬²Ù×÷M1¿¨×î´óµÈ´ıÊ±¼ä25ms
+    ul = 1000;//æ ¹æ®æ—¶é’Ÿé¢‘ç‡è°ƒæ•´ï¼Œæ“ä½œM1å¡æœ€å¤§ç­‰å¾…æ—¶é—´25ms
 
-    do 														//ÈÏÖ¤ ÓëÑ°¿¨µÈ´ıÊ±¼ä
+    do 														//è®¤è¯ ä¸å¯»å¡ç­‰å¾…æ—¶é—´
     {
-        ucN = ReadRawRC ( ComIrqReg );							//²éÑ¯ÊÂ¼şÖĞ¶Ï
+        ucN = ReadRawRC ( ComIrqReg );							//æŸ¥è¯¢äº‹ä»¶ä¸­æ–­
         ul --;
-    } while ( ( ul != 0 ) && ( ! ( ucN & 0x01 ) ) && ( ! ( ucN & ucWaitFor ) ) );		//ÍË³öÌõ¼şi=0,¶¨Ê±Æ÷ÖĞ¶Ï£¬ÓëĞ´¿ÕÏĞÃüÁî
+    } while ( ( ul != 0 ) && ( ! ( ucN & 0x01 ) ) && ( ! ( ucN & ucWaitFor ) ) );		//é€€å‡ºæ¡ä»¶i=0,å®šæ—¶å™¨ä¸­æ–­ï¼Œä¸å†™ç©ºé—²å‘½ä»¤
 
-    ClearBitMask ( BitFramingReg, 0x80 );					//ÇåÀíÔÊĞíStartSendÎ»
+    ClearBitMask ( BitFramingReg, 0x80 );					//æ¸…ç†å…è®¸StartSendä½
 
     if ( ul != 0 )
     {
-        if ( ! (( ReadRawRC ( ErrorReg ) & 0x1B )) )			//¶Á´íÎó±êÖ¾¼Ä´æÆ÷BufferOfI CollErr ParityErr ProtocolErr
+        if ( ! (( ReadRawRC ( ErrorReg ) & 0x1B )) )			//è¯»é”™è¯¯æ ‡å¿—å¯„å­˜å™¨BufferOfI CollErr ParityErr ProtocolErr
         {
             cStatus = MI_OK;
 
-            if ( ucN & ucIrqEn & 0x01 )					//ÊÇ·ñ·¢Éú¶¨Ê±Æ÷ÖĞ¶Ï
+            if ( ucN & ucIrqEn & 0x01 )					//æ˜¯å¦å‘ç”Ÿå®šæ—¶å™¨ä¸­æ–­
                 cStatus = MI_NOTAGERR;
 
             if ( ucCommand == PCD_TRANSCEIVE )
             {
-                ucN = ReadRawRC ( FIFOLevelReg );			//¶ÁFIFOÖĞ±£´æµÄ×Ö½ÚÊı
+                ucN = ReadRawRC ( FIFOLevelReg );			//è¯»FIFOä¸­ä¿å­˜çš„å­—èŠ‚æ•°
 
-                ucLastBits = ReadRawRC ( ControlReg ) & 0x07;	//×îºó½ÓÊÕµ½µÃ×Ö½ÚµÄÓĞĞ§Î»Êı
+                ucLastBits = ReadRawRC ( ControlReg ) & 0x07;	//æœ€åæ¥æ”¶åˆ°å¾—å­—èŠ‚çš„æœ‰æ•ˆä½æ•°
 
                 if ( ucLastBits )
-                    * pOutLenBit = ( ucN - 1 ) * 8 + ucLastBits;   	//N¸ö×Ö½ÚÊı¼õÈ¥1£¨×îºóÒ»¸ö×Ö½Ú£©+×îºóÒ»Î»µÄÎ»Êı ¶ÁÈ¡µ½µÄÊı¾İ×ÜÎ»Êı
+                    * pOutLenBit = ( ucN - 1 ) * 8 + ucLastBits;   	//Nä¸ªå­—èŠ‚æ•°å‡å»1ï¼ˆæœ€åä¸€ä¸ªå­—èŠ‚ï¼‰+æœ€åä¸€ä½çš„ä½æ•° è¯»å–åˆ°çš„æ•°æ®æ€»ä½æ•°
                 else
-                    * pOutLenBit = ucN * 8;   					//×îºó½ÓÊÕµ½µÄ×Ö½ÚÕû¸ö×Ö½ÚÓĞĞ§
+                    * pOutLenBit = ucN * 8;   					//æœ€åæ¥æ”¶åˆ°çš„å­—èŠ‚æ•´ä¸ªå­—èŠ‚æœ‰æ•ˆ
 
                 if ( ucN == 0 )
                     ucN = 1;
@@ -593,20 +592,20 @@ char PcdComMF522 ( u8 ucCommand, u8 * pInData, u8 ucInLenByte, u8 * pOutData, u3
 
 
 /*
- * º¯ÊıÃû£ºPcdRequest
- * ÃèÊö  £ºÑ°¿¨
- * ÊäÈë  £ºucReq_code£¬Ñ°¿¨·½Ê½
- *                     = 0x52£¬Ñ°¸ĞÓ¦ÇøÄÚËùÓĞ·ûºÏ14443A±ê×¼µÄ¿¨
- *                     = 0x26£¬Ñ°Î´½øÈëĞİÃß×´Ì¬µÄ¿¨
- *         pTagType£¬¿¨Æ¬ÀàĞÍ´úÂë
- *                   = 0x4400£¬Mifare_UltraLight
- *                   = 0x0400£¬Mifare_One(S50)
- *                   = 0x0200£¬Mifare_One(S70)
- *                   = 0x0800£¬Mifare_Pro(X))
- *                   = 0x4403£¬Mifare_DESFire
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdRequest
+ * æè¿°  ï¼šå¯»å¡
+ * è¾“å…¥  ï¼šucReq_codeï¼Œå¯»å¡æ–¹å¼
+ *                     = 0x52ï¼Œå¯»æ„Ÿåº”åŒºå†…æ‰€æœ‰ç¬¦åˆ14443Aæ ‡å‡†çš„å¡
+ *                     = 0x26ï¼Œå¯»æœªè¿›å…¥ä¼‘çœ çŠ¶æ€çš„å¡
+ *         pTagTypeï¼Œå¡ç‰‡ç±»å‹ä»£ç 
+ *                   = 0x4400ï¼ŒMifare_UltraLight
+ *                   = 0x0400ï¼ŒMifare_One(S50)
+ *                   = 0x0200ï¼ŒMifare_One(S70)
+ *                   = 0x0800ï¼ŒMifare_Pro(X))
+ *                   = 0x4403ï¼ŒMifare_DESFire
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdRequest ( u8 ucReq_code, u8 * pTagType )
 {
@@ -614,15 +613,15 @@ char PcdRequest ( u8 ucReq_code, u8 * pTagType )
     u8 ucComMF522Buf [ MAXRLEN ];
     u32 ulLen;
 
-    ClearBitMask ( Status2Reg, 0x08 );	//ÇåÀíÖ¸Ê¾MIFARECyptolµ¥Ôª½ÓÍ¨ÒÔ¼°ËùÓĞ¿¨µÄÊı¾İÍ¨ĞÅ±»¼ÓÃÜµÄÇé¿ö
-    WriteRawRC ( BitFramingReg, 0x07 );	//	·¢ËÍµÄ×îºóÒ»¸ö×Ö½ÚµÄ ÆßÎ»
-    SetBitMask ( TxControlReg, 0x03 );	//TX1,TX2¹Ü½ÅµÄÊä³öĞÅºÅ´«µİ¾­·¢ËÍµ÷ÖÆµÄ13.56µÄÄÜÁ¿ÔØ²¨ĞÅºÅ
+    ClearBitMask ( Status2Reg, 0x08 );	//æ¸…ç†æŒ‡ç¤ºMIFARECyptolå•å…ƒæ¥é€šä»¥åŠæ‰€æœ‰å¡çš„æ•°æ®é€šä¿¡è¢«åŠ å¯†çš„æƒ…å†µ
+    WriteRawRC ( BitFramingReg, 0x07 );	//	å‘é€çš„æœ€åä¸€ä¸ªå­—èŠ‚çš„ ä¸ƒä½
+    SetBitMask ( TxControlReg, 0x03 );	//TX1,TX2ç®¡è„šçš„è¾“å‡ºä¿¡å·ä¼ é€’ç»å‘é€è°ƒåˆ¶çš„13.56çš„èƒ½é‡è½½æ³¢ä¿¡å·
 
-    ucComMF522Buf [ 0 ] = ucReq_code;		//´æÈë ¿¨Æ¬ÃüÁî×Ö
+    ucComMF522Buf [ 0 ] = ucReq_code;		//å­˜å…¥ å¡ç‰‡å‘½ä»¤å­—
 
-    cStatus = PcdComMF522 ( PCD_TRANSCEIVE,	ucComMF522Buf, 1, ucComMF522Buf, & ulLen );	//Ñ°¿¨
+    cStatus = PcdComMF522 ( PCD_TRANSCEIVE,	ucComMF522Buf, 1, ucComMF522Buf, & ulLen );	//å¯»å¡
 
-    if ( ( cStatus == MI_OK ) && ( ulLen == 0x10 ) )	//Ñ°¿¨³É¹¦·µ»Ø¿¨ÀàĞÍ
+    if ( ( cStatus == MI_OK ) && ( ulLen == 0x10 ) )	//å¯»å¡æˆåŠŸè¿”å›å¡ç±»å‹
     {
         * pTagType = ucComMF522Buf [ 0 ];
         * ( pTagType + 1 ) = ucComMF522Buf [ 1 ];
@@ -637,12 +636,12 @@ char PcdRequest ( u8 ucReq_code, u8 * pTagType )
 
 
 /*
- * º¯ÊıÃû£ºPcdAnticoll
- * ÃèÊö  £º·À³å×²
- * ÊäÈë  £ºpSnr£¬¿¨Æ¬ĞòÁĞºÅ£¬4×Ö½Ú
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdAnticoll
+ * æè¿°  ï¼šé˜²å†²æ’
+ * è¾“å…¥  ï¼špSnrï¼Œå¡ç‰‡åºåˆ—å·ï¼Œ4å­—èŠ‚
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdAnticoll ( u8 * pSnr )
 {
@@ -651,20 +650,20 @@ char PcdAnticoll ( u8 * pSnr )
     u8 ucComMF522Buf [ MAXRLEN ];
     u32 ulLen;
 
-    ClearBitMask ( Status2Reg, 0x08 );		//ÇåMFCryptol OnÎ» Ö»ÓĞ³É¹¦Ö´ĞĞMFAuthentÃüÁîºó£¬¸ÃÎ»²ÅÄÜÖÃÎ»
-    WriteRawRC ( BitFramingReg, 0x00);		//ÇåÀí¼Ä´æÆ÷ Í£Ö¹ÊÕ·¢
-    ClearBitMask ( CollReg, 0x80 );			//ÇåValuesAfterCollËùÓĞ½ÓÊÕµÄÎ»ÔÚ³åÍ»ºó±»Çå³ı
+    ClearBitMask ( Status2Reg, 0x08 );		//æ¸…MFCryptol Onä½ åªæœ‰æˆåŠŸæ‰§è¡ŒMFAuthentå‘½ä»¤åï¼Œè¯¥ä½æ‰èƒ½ç½®ä½
+    WriteRawRC ( BitFramingReg, 0x00);		//æ¸…ç†å¯„å­˜å™¨ åœæ­¢æ”¶å‘
+    ClearBitMask ( CollReg, 0x80 );			//æ¸…ValuesAfterCollæ‰€æœ‰æ¥æ”¶çš„ä½åœ¨å†²çªåè¢«æ¸…é™¤
 
-    ucComMF522Buf [ 0 ] = 0x93;	//¿¨Æ¬·À³åÍ»ÃüÁî
+    ucComMF522Buf [ 0 ] = 0x93;	//å¡ç‰‡é˜²å†²çªå‘½ä»¤
     ucComMF522Buf [ 1 ] = 0x20;
 
-    cStatus = PcdComMF522 ( PCD_TRANSCEIVE, ucComMF522Buf, 2, ucComMF522Buf, & ulLen);//Óë¿¨Æ¬Í¨ĞÅ
+    cStatus = PcdComMF522 ( PCD_TRANSCEIVE, ucComMF522Buf, 2, ucComMF522Buf, & ulLen);//ä¸å¡ç‰‡é€šä¿¡
 
-    if ( cStatus == MI_OK)		//Í¨ĞÅ³É¹¦
+    if ( cStatus == MI_OK)		//é€šä¿¡æˆåŠŸ
     {
         for ( uc = 0; uc < 4; uc ++ )
         {
-            * ( pSnr + uc )  = ucComMF522Buf [ uc ];			//¶Á³öUID
+            * ( pSnr + uc )  = ucComMF522Buf [ uc ];			//è¯»å‡ºUID
             ucSnr_check ^= ucComMF522Buf [ uc ];
         }
 
@@ -681,13 +680,13 @@ char PcdAnticoll ( u8 * pSnr )
 
 
 /*
- * º¯ÊıÃû£ºCalulateCRC
- * ÃèÊö  £ºÓÃRC522¼ÆËãCRC16
- * ÊäÈë  £ºpIndata£¬¼ÆËãCRC16µÄÊı×é
- *         ucLen£¬¼ÆËãCRC16µÄÊı×é×Ö½Ú³¤¶È
- *         pOutData£¬´æ·Å¼ÆËã½á¹û´æ·ÅµÄÊ×µØÖ·
- * ·µ»Ø  : ÎŞ
- * µ÷ÓÃ  £ºÄÚ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šCalulateCRC
+ * æè¿°  ï¼šç”¨RC522è®¡ç®—CRC16
+ * è¾“å…¥  ï¼špIndataï¼Œè®¡ç®—CRC16çš„æ•°ç»„
+ *         ucLenï¼Œè®¡ç®—CRC16çš„æ•°ç»„å­—èŠ‚é•¿åº¦
+ *         pOutDataï¼Œå­˜æ”¾è®¡ç®—ç»“æœå­˜æ”¾çš„é¦–åœ°å€
+ * è¿”å›  : æ— 
+ * è°ƒç”¨  ï¼šå†…éƒ¨è°ƒç”¨
  */
 void CalulateCRC ( u8 * pIndata, u8 ucLen, u8 * pOutData )
 {
@@ -719,12 +718,12 @@ void CalulateCRC ( u8 * pIndata, u8 ucLen, u8 * pOutData )
 
 
 /*
- * º¯ÊıÃû£ºPcdSelect
- * ÃèÊö  £ºÑ¡¶¨¿¨Æ¬
- * ÊäÈë  £ºpSnr£¬¿¨Æ¬ĞòÁĞºÅ£¬4×Ö½Ú
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdSelect
+ * æè¿°  ï¼šé€‰å®šå¡ç‰‡
+ * è¾“å…¥  ï¼špSnrï¼Œå¡ç‰‡åºåˆ—å·ï¼Œ4å­—èŠ‚
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdSelect ( u8 * pSnr )
 {
@@ -760,17 +759,17 @@ char PcdSelect ( u8 * pSnr )
 
 
 /*
- * º¯ÊıÃû£ºPcdAuthState
- * ÃèÊö  £ºÑéÖ¤¿¨Æ¬ÃÜÂë
- * ÊäÈë  £ºucAuth_mode£¬ÃÜÂëÑéÖ¤Ä£Ê½
- *                     = 0x60£¬ÑéÖ¤AÃÜÔ¿
- *                     = 0x61£¬ÑéÖ¤BÃÜÔ¿
- *         u8 ucAddr£¬¿éµØÖ·
- *         pKey£¬ÃÜÂë
- *         pSnr£¬¿¨Æ¬ĞòÁĞºÅ£¬4×Ö½Ú
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdAuthState
+ * æè¿°  ï¼šéªŒè¯å¡ç‰‡å¯†ç 
+ * è¾“å…¥  ï¼šucAuth_modeï¼Œå¯†ç éªŒè¯æ¨¡å¼
+ *                     = 0x60ï¼ŒéªŒè¯Aå¯†é’¥
+ *                     = 0x61ï¼ŒéªŒè¯Bå¯†é’¥
+ *         u8 ucAddrï¼Œå—åœ°å€
+ *         pKeyï¼Œå¯†ç 
+ *         pSnrï¼Œå¡ç‰‡åºåˆ—å·ï¼Œ4å­—èŠ‚
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdAuthState ( u8 ucAuth_mode, u8 ucAddr, u8 * pKey, u8 * pSnr )
 {
@@ -801,13 +800,13 @@ char PcdAuthState ( u8 ucAuth_mode, u8 ucAddr, u8 * pKey, u8 * pSnr )
 
 
 /*
- * º¯ÊıÃû£ºPcdWrite
- * ÃèÊö  £ºĞ´Êı¾İµ½M1¿¨Ò»¿é
- * ÊäÈë  £ºu8 ucAddr£¬¿éµØÖ·
- *         pData£¬Ğ´ÈëµÄÊı¾İ£¬16×Ö½Ú
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdWrite
+ * æè¿°  ï¼šå†™æ•°æ®åˆ°M1å¡ä¸€å—
+ * è¾“å…¥  ï¼šu8 ucAddrï¼Œå—åœ°å€
+ *         pDataï¼Œå†™å…¥çš„æ•°æ®ï¼Œ16å­—èŠ‚
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdWrite ( u8 ucAddr, u8 * pData )
 {
@@ -844,13 +843,13 @@ char PcdWrite ( u8 ucAddr, u8 * pData )
 
 
 /*
- * º¯ÊıÃû£ºPcdRead
- * ÃèÊö  £º¶ÁÈ¡M1¿¨Ò»¿éÊı¾İ
- * ÊäÈë  £ºu8 ucAddr£¬¿éµØÖ·
- *         pData£¬¶Á³öµÄÊı¾İ£¬16×Ö½Ú
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdRead
+ * æè¿°  ï¼šè¯»å–M1å¡ä¸€å—æ•°æ®
+ * è¾“å…¥  ï¼šu8 ucAddrï¼Œå—åœ°å€
+ *         pDataï¼Œè¯»å‡ºçš„æ•°æ®ï¼Œ16å­—èŠ‚
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdRead ( u8 ucAddr, u8 * pData )
 {
@@ -880,12 +879,12 @@ char PcdRead ( u8 ucAddr, u8 * pData )
 
 
 /*
- * º¯ÊıÃû£ºPcdHalt
- * ÃèÊö  £ºÃüÁî¿¨Æ¬½øÈëĞİÃß×´Ì¬
- * ÊäÈë  £ºÎŞ
- * ·µ»Ø  : ×´Ì¬Öµ
- *         = MI_OK£¬³É¹¦
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * å‡½æ•°åï¼šPcdHalt
+ * æè¿°  ï¼šå‘½ä»¤å¡ç‰‡è¿›å…¥ä¼‘çœ çŠ¶æ€
+ * è¾“å…¥  ï¼šæ— 
+ * è¿”å›  : çŠ¶æ€å€¼
+ *         = MI_OKï¼ŒæˆåŠŸ
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  */
 char PcdHalt( void )
 {
@@ -905,17 +904,17 @@ char PcdHalt( void )
 
 void IC_CMT ( u8 * UID, u8 * KEY, u8 RW, u8 * Dat )
 {
-    u8 ucArray_ID [ 4 ] = { 0 };//ÏÈºó´æ·ÅIC¿¨µÄÀàĞÍºÍUID(IC¿¨ĞòÁĞºÅ)
+    u8 ucArray_ID [ 4 ] = { 0 };//å…ˆåå­˜æ”¾ICå¡çš„ç±»å‹å’ŒUID(ICå¡åºåˆ—å·)
 
-    PcdRequest ( 0x52, ucArray_ID );//Ñ°¿¨
+    PcdRequest ( 0x52, ucArray_ID );//å¯»å¡
 
-    PcdAnticoll ( ucArray_ID );//·À³å×²
+    PcdAnticoll ( ucArray_ID );//é˜²å†²æ’
 
-    PcdSelect ( UID );//Ñ¡¶¨¿¨
+    PcdSelect ( UID );//é€‰å®šå¡
 
-    PcdAuthState ( 0x60, 0x10, KEY, UID );//Ğ£Ñé
+    PcdAuthState ( 0x60, 0x10, KEY, UID );//æ ¡éªŒ
 
-    if ( RW )//¶ÁĞ´Ñ¡Ôñ£¬1ÊÇ¶Á£¬0ÊÇĞ´
+    if ( RW )//è¯»å†™é€‰æ‹©ï¼Œ1æ˜¯è¯»ï¼Œ0æ˜¯å†™
         PcdRead ( 0x10, Dat );
 
     else
@@ -925,7 +924,7 @@ void IC_CMT ( u8 * UID, u8 * KEY, u8 RW, u8 * Dat )
 
 }
 
-void ShowID(u8 *p)	 //ÏÔÊ¾¿¨µÄ¿¨ºÅ£¬ÒÔÊ®Áù½øÖÆÏÔÊ¾
+void ShowID(u8 *p)	 //æ˜¾ç¤ºå¡çš„å¡å·ï¼Œä»¥åå…­è¿›åˆ¶æ˜¾ç¤º
 {
     u8 num[9];
     u8 i;
@@ -947,7 +946,7 @@ void ShowID(u8 *p)	 //ÏÔÊ¾¿¨µÄ¿¨ºÅ£¬ÒÔÊ®Áù½øÖÆÏÔÊ¾
 //		
 //		num[0]=p[0]/16;
 //		num[0]>9?(num[0]+='7'):(num[0]+='0');
-//		printf("num0Ê®½øÖÆ£º%d,Ê®Áù½ø:%02x\r\n",num[0], num[0]);
+//		printf("num0åè¿›åˆ¶ï¼š%d,åå…­è¿›:%02x\r\n",num[0], num[0]);
 //		num[1]=p[1]%16;
 //		
 //}
